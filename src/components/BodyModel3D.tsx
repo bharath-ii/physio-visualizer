@@ -12,23 +12,23 @@ interface BodyModel3DProps {
 const BodyMesh = ({ gender, bmi, netCalories }: BodyModel3DProps) => {
   const meshRef = useRef<THREE.Mesh>(null);
 
-  // Calculate body proportions based on BMI and net calories
+  // Calculate body proportions based on BMI and net calories with more visible changes
   const bodyScale = useMemo(() => {
     const baseBMI = 22; // Average BMI
     const bmiDiff = bmi - baseBMI;
     
-    // Scale factors based on BMI deviation
-    const widthScale = 1 + (bmiDiff * 0.04);
+    // More pronounced scale factors based on BMI deviation
+    const widthScale = 1 + (bmiDiff * 0.08); // Doubled effect
     const heightScale = 1;
-    const depthScale = 1 + (bmiDiff * 0.03);
+    const depthScale = 1 + (bmiDiff * 0.06); // Doubled effect
     
-    // Adjust based on net calories (subtle effect for recent changes)
-    const calorieEffect = Math.min(Math.max(netCalories / 3500, -0.1), 0.1);
+    // More visible calorie effect
+    const calorieEffect = Math.min(Math.max(netCalories / 2000, -0.2), 0.2);
     
     return {
-      x: Math.max(0.6, Math.min(1.8, widthScale + calorieEffect)),
+      x: Math.max(0.5, Math.min(2.2, widthScale + calorieEffect)),
       y: heightScale,
-      z: Math.max(0.6, Math.min(1.8, depthScale + calorieEffect)),
+      z: Math.max(0.5, Math.min(2.2, depthScale + calorieEffect)),
     };
   }, [bmi, netCalories]);
 
@@ -48,36 +48,94 @@ const BodyMesh = ({ gender, bmi, netCalories }: BodyModel3DProps) => {
 
   return (
     <group>
-      {/* Main torso */}
-      <mesh ref={meshRef} position={[0, 0, 0]} scale={[bodyScale.x, bodyScale.y, bodyScale.z]}>
-        <capsuleGeometry args={[0.5, 1.5, 32, 32]} />
-        <meshStandardMaterial color={bodyColor} roughness={0.7} metalness={0.1} />
+      {/* Upper torso - chest area */}
+      <mesh ref={meshRef} position={[0, 0.5, 0]} scale={[bodyScale.x * 0.9, bodyScale.y * 0.8, bodyScale.z * 0.7]}>
+        <boxGeometry args={[1, 1.2, 0.6]} />
+        <meshStandardMaterial color={bodyColor} roughness={0.6} metalness={0.2} />
       </mesh>
       
-      {/* Head */}
-      <mesh position={[0, 1.5, 0]} scale={[1, 1, 1]}>
-        <sphereGeometry args={[0.35, 32, 32]} />
+      {/* Lower torso - abdomen */}
+      <mesh position={[0, -0.4, 0]} scale={[bodyScale.x, bodyScale.y * 0.7, bodyScale.z * 0.8]}>
+        <boxGeometry args={[0.95, 1, 0.65]} />
+        <meshStandardMaterial color={bodyColor} roughness={0.6} metalness={0.2} />
+      </mesh>
+      
+      {/* Hips/pelvis */}
+      <mesh position={[0, -1.1, 0]} scale={[bodyScale.x * 0.95, bodyScale.y * 0.5, bodyScale.z * 0.75]}>
+        <boxGeometry args={[1.1, 0.6, 0.7]} />
+        <meshStandardMaterial color={bodyColor} roughness={0.6} metalness={0.2} />
+      </mesh>
+      
+      {/* Neck */}
+      <mesh position={[0, 1.3, 0]} scale={[0.4, 0.4, 0.4]}>
+        <cylinderGeometry args={[0.3, 0.35, 0.5, 16]} />
         <meshStandardMaterial color="#FFD8B1" roughness={0.8} />
       </mesh>
       
-      {/* Arms */}
-      <mesh position={[-0.6 * bodyScale.x, 0.3, 0]} rotation={[0, 0, Math.PI / 6]} scale={[0.6, 0.6, 0.6]}>
-        <capsuleGeometry args={[0.15, 1.2, 16, 16]} />
-        <meshStandardMaterial color={bodyColor} roughness={0.7} metalness={0.1} />
-      </mesh>
-      <mesh position={[0.6 * bodyScale.x, 0.3, 0]} rotation={[0, 0, -Math.PI / 6]} scale={[0.6, 0.6, 0.6]}>
-        <capsuleGeometry args={[0.15, 1.2, 16, 16]} />
-        <meshStandardMaterial color={bodyColor} roughness={0.7} metalness={0.1} />
+      {/* Head */}
+      <mesh position={[0, 1.8, 0]} scale={[1, 1.1, 1]}>
+        <sphereGeometry args={[0.4, 32, 32]} />
+        <meshStandardMaterial color="#FFD8B1" roughness={0.8} />
       </mesh>
       
-      {/* Legs */}
-      <mesh position={[-0.25, -1.5, 0]} scale={[0.7, 0.7, 0.7]}>
-        <capsuleGeometry args={[0.18, 1.3, 16, 16]} />
-        <meshStandardMaterial color={bodyColor} roughness={0.7} metalness={0.1} />
+      {/* Shoulders */}
+      <mesh position={[-0.65 * bodyScale.x, 0.9, 0]} scale={[0.35, 0.35, 0.35]}>
+        <sphereGeometry args={[0.5, 16, 16]} />
+        <meshStandardMaterial color={bodyColor} roughness={0.6} metalness={0.2} />
       </mesh>
-      <mesh position={[0.25, -1.5, 0]} scale={[0.7, 0.7, 0.7]}>
-        <capsuleGeometry args={[0.18, 1.3, 16, 16]} />
-        <meshStandardMaterial color={bodyColor} roughness={0.7} metalness={0.1} />
+      <mesh position={[0.65 * bodyScale.x, 0.9, 0]} scale={[0.35, 0.35, 0.35]}>
+        <sphereGeometry args={[0.5, 16, 16]} />
+        <meshStandardMaterial color={bodyColor} roughness={0.6} metalness={0.2} />
+      </mesh>
+      
+      {/* Upper arms */}
+      <mesh position={[-0.75 * bodyScale.x, 0.3, 0]} rotation={[0, 0, Math.PI / 8]} scale={[bodyScale.x * 0.3, 1, bodyScale.z * 0.3]}>
+        <capsuleGeometry args={[0.2, 0.8, 16, 16]} />
+        <meshStandardMaterial color={bodyColor} roughness={0.6} metalness={0.2} />
+      </mesh>
+      <mesh position={[0.75 * bodyScale.x, 0.3, 0]} rotation={[0, 0, -Math.PI / 8]} scale={[bodyScale.x * 0.3, 1, bodyScale.z * 0.3]}>
+        <capsuleGeometry args={[0.2, 0.8, 16, 16]} />
+        <meshStandardMaterial color={bodyColor} roughness={0.6} metalness={0.2} />
+      </mesh>
+      
+      {/* Lower arms */}
+      <mesh position={[-0.9 * bodyScale.x, -0.5, 0]} rotation={[0, 0, Math.PI / 10]} scale={[bodyScale.x * 0.25, 0.9, bodyScale.z * 0.25]}>
+        <capsuleGeometry args={[0.18, 0.8, 16, 16]} />
+        <meshStandardMaterial color="#FFD8B1" roughness={0.7} />
+      </mesh>
+      <mesh position={[0.9 * bodyScale.x, -0.5, 0]} rotation={[0, 0, -Math.PI / 10]} scale={[bodyScale.x * 0.25, 0.9, bodyScale.z * 0.25]}>
+        <capsuleGeometry args={[0.18, 0.8, 16, 16]} />
+        <meshStandardMaterial color="#FFD8B1" roughness={0.7} />
+      </mesh>
+      
+      {/* Upper legs (thighs) */}
+      <mesh position={[-0.35, -1.8, 0]} scale={[bodyScale.x * 0.4, 1, bodyScale.z * 0.4]}>
+        <capsuleGeometry args={[0.25, 1, 16, 16]} />
+        <meshStandardMaterial color={bodyColor} roughness={0.6} metalness={0.2} />
+      </mesh>
+      <mesh position={[0.35, -1.8, 0]} scale={[bodyScale.x * 0.4, 1, bodyScale.z * 0.4]}>
+        <capsuleGeometry args={[0.25, 1, 16, 16]} />
+        <meshStandardMaterial color={bodyColor} roughness={0.6} metalness={0.2} />
+      </mesh>
+      
+      {/* Lower legs (calves) */}
+      <mesh position={[-0.35, -3, 0]} scale={[bodyScale.x * 0.3, 0.85, bodyScale.z * 0.3]}>
+        <capsuleGeometry args={[0.2, 0.9, 16, 16]} />
+        <meshStandardMaterial color="#FFD8B1" roughness={0.7} />
+      </mesh>
+      <mesh position={[0.35, -3, 0]} scale={[bodyScale.x * 0.3, 0.85, bodyScale.z * 0.3]}>
+        <capsuleGeometry args={[0.2, 0.9, 16, 16]} />
+        <meshStandardMaterial color="#FFD8B1" roughness={0.7} />
+      </mesh>
+      
+      {/* Feet */}
+      <mesh position={[-0.35, -3.7, 0.15]} scale={[0.4, 0.3, 0.6]}>
+        <boxGeometry args={[0.5, 0.3, 0.8]} />
+        <meshStandardMaterial color="#8B6F47" roughness={0.9} />
+      </mesh>
+      <mesh position={[0.35, -3.7, 0.15]} scale={[0.4, 0.3, 0.6]}>
+        <boxGeometry args={[0.5, 0.3, 0.8]} />
+        <meshStandardMaterial color="#8B6F47" roughness={0.9} />
       </mesh>
     </group>
   );
@@ -86,13 +144,14 @@ const BodyMesh = ({ gender, bmi, netCalories }: BodyModel3DProps) => {
 export const BodyModel3D = ({ gender, bmi, netCalories }: BodyModel3DProps) => {
   return (
     <div className="w-full h-[500px] rounded-xl overflow-hidden shadow-elegant bg-card">
-      <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
-        <ambientLight intensity={0.6} />
-        <directionalLight position={[5, 5, 5]} intensity={1} castShadow />
-        <directionalLight position={[-5, 3, -5]} intensity={0.4} />
+      <Canvas camera={{ position: [0, 0, 8], fov: 50 }}>
+        <ambientLight intensity={0.7} />
+        <directionalLight position={[5, 8, 5]} intensity={1.2} castShadow />
+        <directionalLight position={[-5, 3, -5]} intensity={0.5} />
+        <spotLight position={[0, 10, 0]} intensity={0.5} angle={0.3} penumbra={1} />
         <BodyMesh gender={gender} bmi={bmi} netCalories={netCalories} />
-        <OrbitControls enableZoom={true} enablePan={false} minDistance={3} maxDistance={8} />
-        <gridHelper args={[10, 10, "#ddd", "#ddd"]} position={[0, -3, 0]} />
+        <OrbitControls enableZoom={true} enablePan={false} minDistance={5} maxDistance={12} />
+        <gridHelper args={[10, 10, "#888", "#ccc"]} position={[0, -4, 0]} />
       </Canvas>
     </div>
   );
