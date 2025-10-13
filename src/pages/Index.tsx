@@ -5,6 +5,7 @@ import { UserInputForm } from "@/components/UserInputForm";
 import { ResultsDisplay } from "@/components/ResultsDisplay";
 import { calculateBMI, estimateCaloriesFromDiet, estimateCaloriesBurned } from "@/utils/calculations";
 import { Dumbbell } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface UserData {
   height: number;
@@ -18,6 +19,7 @@ interface UserData {
 }
 
 const Index = () => {
+  const { toast } = useToast();
   const [gender, setGender] = useState<"male" | "female" | null>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
   const [bmi, setBmi] = useState(0);
@@ -30,10 +32,12 @@ const Index = () => {
   };
 
   const handleFormSubmit = (data: UserData) => {
+    console.log("Form submitted with data:", data);
     setUserData(data);
 
     // Calculate BMI
     const calculatedBMI = calculateBMI(data.height, data.weight);
+    console.log("Calculated BMI:", calculatedBMI);
     setBmi(calculatedBMI);
 
     // Calculate calories
@@ -41,9 +45,17 @@ const Index = () => {
     const burned = estimateCaloriesBurned(data.morningWorkout, data.eveningWorkout, data.nightWorkout);
     const net = consumed - burned;
 
+    console.log("Calories - Consumed:", consumed, "Burned:", burned, "Net:", net);
+
     setCaloriesConsumed(consumed);
     setCaloriesBurned(burned);
     setNetCalories(net);
+
+    // Show success notification
+    toast({
+      title: "Model Updated!",
+      description: `BMI: ${calculatedBMI.toFixed(1)} | Net Calories: ${net > 0 ? '+' : ''}${net}`,
+    });
   };
 
   return (
