@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Plus, X } from "lucide-react";
-import { foodCalories } from "@/utils/foodDatabase";
 
 export interface FoodItem {
   name: string;
@@ -33,34 +31,25 @@ export const FoodInput = ({ label, foods, onFoodsChange }: FoodInputProps) => {
     onFoodsChange(foods.filter((_, i) => i !== index));
   };
 
-  const getUnit = (foodName: string) => {
-    const food = foodCalories[foodName.toLowerCase()];
-    return food?.unit === "g" ? "grams" : "pieces";
-  };
-
   return (
     <div className="space-y-3">
       <Label className="text-base font-semibold">{label}</Label>
       
       <div className="grid grid-cols-[1fr_auto_auto] gap-2">
-        <Select value={currentFood} onValueChange={setCurrentFood}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select food" />
-          </SelectTrigger>
-          <SelectContent className="max-h-[200px]">
-            {Object.keys(foodCalories).map((food) => (
-              <SelectItem key={food} value={food}>
-                {food.charAt(0).toUpperCase() + food.slice(1)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Input
+          type="text"
+          placeholder="Food item (e.g., rice, dosa, chicken)"
+          value={currentFood}
+          onChange={(e) => setCurrentFood(e.target.value)}
+          onKeyPress={(e) => e.key === 'Enter' && e.preventDefault()}
+        />
         
         <Input
           type="number"
-          placeholder={currentFood ? getUnit(currentFood) : "Qty"}
+          placeholder="Grams"
           value={currentQuantity}
           onChange={(e) => setCurrentQuantity(e.target.value)}
+          onKeyPress={(e) => e.key === 'Enter' && e.preventDefault()}
           className="w-24"
         />
         
@@ -74,7 +63,7 @@ export const FoodInput = ({ label, foods, onFoodsChange }: FoodInputProps) => {
           {foods.map((food, index) => (
             <div key={index} className="flex items-center justify-between bg-secondary/50 p-2 rounded-lg">
               <span className="text-sm">
-                {food.name.charAt(0).toUpperCase() + food.name.slice(1)} - {food.quantity} {getUnit(food.name)}
+                {food.name} - {food.quantity}g
               </span>
               <Button
                 type="button"
