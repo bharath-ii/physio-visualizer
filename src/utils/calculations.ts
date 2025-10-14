@@ -1,41 +1,17 @@
+import { FoodItem } from "@/components/FoodInput";
+import { calculateFoodCalories } from "./foodDatabase";
+
 // BMI Calculation
 export const calculateBMI = (heightCm: number, weightKg: number): number => {
   const heightM = heightCm / 100;
   return weightKg / (heightM * heightM);
 };
 
-// Calorie estimation from diet description
-export const estimateCaloriesFromDiet = (
-  breakfast: string,
-  lunch: string,
-  dinner: string
-): number => {
-  // Simple estimation based on common Indian meals
-  const mealCalories = (meal: string): number => {
-    if (!meal || meal.trim() === "") return 0;
-    
-    const lowerMeal = meal.toLowerCase();
-    let calories = 300; // Base calories for any meal
-    
-    // Common food items and their approximate calories
-    if (lowerMeal.includes("egg")) calories += 70 * (lowerMeal.match(/egg/g)?.length || 1);
-    if (lowerMeal.includes("toast") || lowerMeal.includes("bread")) calories += 80;
-    if (lowerMeal.includes("milk")) calories += 100;
-    if (lowerMeal.includes("rice")) calories += 200;
-    if (lowerMeal.includes("roti") || lowerMeal.includes("chapati")) calories += 70 * 2;
-    if (lowerMeal.includes("dal")) calories += 150;
-    if (lowerMeal.includes("chicken")) calories += 200;
-    if (lowerMeal.includes("paneer")) calories += 250;
-    if (lowerMeal.includes("curry")) calories += 150;
-    if (lowerMeal.includes("vegetable")) calories += 50;
-    if (lowerMeal.includes("salad")) calories += 30;
-    if (lowerMeal.includes("fruit")) calories += 60;
-    if (lowerMeal.includes("juice")) calories += 100;
-    
-    return calories;
-  };
-
-  return mealCalories(breakfast) + mealCalories(lunch) + mealCalories(dinner);
+// Calculate total calories from food items
+export const calculateMealCalories = (foods: FoodItem[]): number => {
+  return foods.reduce((total, food) => {
+    return total + calculateFoodCalories(food.name, food.quantity);
+  }, 0);
 };
 
 // Calorie estimation from workout description
