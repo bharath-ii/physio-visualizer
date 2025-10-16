@@ -1,5 +1,5 @@
-// Calorie database for common Indian foods (per 100g or per piece)
-export const foodCalories: Record<string, { calories: number; unit: "g" | "piece" }> = {
+// Calorie database for common Indian foods (per 100g, per piece, or per 100ml)
+export const foodCalories: Record<string, { calories: number; unit: "g" | "piece" | "ml" }> = {
   // Grains and Staples
   rice: { calories: 130, unit: "g" },
   "brown rice": { calories: 112, unit: "g" },
@@ -13,12 +13,18 @@ export const foodCalories: Record<string, { calories: number; unit: "g" | "piece
   upma: { calories: 95, unit: "g" },
   
   // Dairy
-  milk: { calories: 42, unit: "g" },
-  curd: { calories: 60, unit: "g" },
-  yogurt: { calories: 60, unit: "g" },
+  milk: { calories: 42, unit: "ml" },
+  curd: { calories: 60, unit: "ml" },
+  yogurt: { calories: 60, unit: "ml" },
   paneer: { calories: 265, unit: "g" },
   ghee: { calories: 900, unit: "g" },
   butter: { calories: 717, unit: "g" },
+  
+  // Beverages
+  tea: { calories: 2, unit: "ml" },
+  coffee: { calories: 2, unit: "ml" },
+  juice: { calories: 45, unit: "ml" },
+  water: { calories: 0, unit: "ml" },
   
   // Lentils and Legumes
   dal: { calories: 116, unit: "g" },
@@ -54,15 +60,22 @@ export const foodCalories: Record<string, { calories: number; unit: "g" | "piece
   orange: { calories: 47, unit: "piece" },
 };
 
-export const calculateFoodCalories = (foodItem: string, quantity: number): number => {
+export const calculateFoodCalories = (foodItem: string, quantity: number, unit: "g" | "piece" | "ml" = "g"): number => {
   const food = foodCalories[foodItem.toLowerCase()];
-  if (!food) return 0;
+  if (!food) {
+    // If food not in database, estimate based on unit
+    if (unit === "piece") return 100 * quantity; // rough estimate per piece
+    if (unit === "ml") return 0.4 * quantity; // rough estimate per ml
+    return 1.5 * quantity; // rough estimate per gram
+  }
   
-  if (food.unit === "g") {
-    // For gram-based items, quantity is in grams
-    return (food.calories * quantity) / 100;
-  } else {
+  if (unit === "piece") {
     // For piece-based items, quantity is count
     return food.calories * quantity;
+  } else if (unit === "g" || unit === "ml") {
+    // For gram/ml-based items, quantity is in grams/ml
+    return (food.calories * quantity) / 100;
   }
+  
+  return 0;
 };

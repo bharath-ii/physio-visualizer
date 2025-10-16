@@ -10,7 +10,7 @@ export const calculateBMI = (heightCm: number, weightKg: number): number => {
 // Calculate total calories from food items
 export const calculateMealCalories = (foods: FoodItem[]): number => {
   return foods.reduce((total, food) => {
-    return total + calculateFoodCalories(food.name, food.quantity);
+    return total + calculateFoodCalories(food.name, food.quantity, food.unit);
   }, 0);
 };
 
