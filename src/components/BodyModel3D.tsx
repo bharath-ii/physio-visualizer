@@ -283,6 +283,8 @@ export const BodyModel3D = ({ gender, bmi, netCalories }: BodyModel3DProps) => {
             metalness={0.1}
           />
         </mesh>
+        
+        <gridHelper args={[10, 10, "hsl(var(--border))", "hsl(var(--border))"]} position={[0, -3.04, 0]} />
       </Canvas>
     </div>
   );
