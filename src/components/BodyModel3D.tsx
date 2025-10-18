@@ -13,15 +13,21 @@ const BodyMesh = ({ gender, bmi, netCalories }: BodyModel3DProps) => {
   const meshRef = useRef<THREE.Mesh>(null);
   const groupRef = useRef<THREE.Group>(null);
 
-  // Calculate body proportions based on BMI and net calories
+  // Calculate body proportions based on BMI, net calories, and gender
   const bodyScale = useMemo(() => {
     const baseBMI = 22;
     const bmiDiff = bmi - baseBMI;
     
+    // Gender-specific base proportions
+    const genderMultiplier = gender === "male" ? 1 : 0.92;
+    const shoulderMultiplier = gender === "male" ? 1.15 : 0.95;
+    const hipMultiplier = gender === "male" ? 0.95 : 1.08;
+    
     // Body width increases with higher BMI - more refined scaling
-    const torsoWidth = 1 + (bmiDiff * 0.10);
-    const limbWidth = 1 + (bmiDiff * 0.06);
-    const shoulderWidth = 1 + (bmiDiff * 0.08);
+    const torsoWidth = (1 + (bmiDiff * 0.10)) * genderMultiplier;
+    const limbWidth = (1 + (bmiDiff * 0.06)) * genderMultiplier;
+    const shoulderWidth = (1 + (bmiDiff * 0.08)) * shoulderMultiplier;
+    const hipWidth = (1 + (bmiDiff * 0.08)) * hipMultiplier;
     
     // Calorie effect on muscle definition and body composition
     const calorieEffect = Math.min(Math.max(netCalories / 1500, -0.2), 0.2);
@@ -31,11 +37,13 @@ const BodyMesh = ({ gender, bmi, netCalories }: BodyModel3DProps) => {
       torsoWidth: Math.max(0.7, Math.min(2.2, torsoWidth + calorieEffect * 0.3)),
       limbWidth: Math.max(0.7, Math.min(1.8, limbWidth + muscleDefinition)),
       shoulderWidth: Math.max(0.8, Math.min(2.0, shoulderWidth + muscleDefinition * 0.7)),
+      hipWidth: Math.max(0.8, Math.min(2.0, hipWidth)),
       torsoDepth: Math.max(0.7, Math.min(2.2, 1 + bmiDiff * 0.08 + calorieEffect * 0.2)),
       neckThickness: Math.max(0.8, Math.min(1.5, 1 + bmiDiff * 0.05)),
       headScale: Math.max(0.95, Math.min(1.15, 1 + bmiDiff * 0.02)),
+      chestScale: gender === "male" ? 1 : 1.05,
     };
-  }, [bmi, netCalories]);
+  }, [bmi, netCalories, gender]);
 
   useFrame((state) => {
     if (groupRef.current) {
@@ -54,18 +62,19 @@ const BodyMesh = ({ gender, bmi, netCalories }: BodyModel3DProps) => {
   const hairColor = "#2C1810";
   const clothingTopColor = "#4A90E2";
   const clothingBottomColor = "#2C3E50";
+  const hairLength = gender === "female" ? 1.3 : 0.7;
 
   return (
     <group ref={groupRef}>
-      {/* Head */}
-      <mesh position={[0, 2.1, 0]} scale={[bodyScale.headScale, bodyScale.headScale * 1.2, bodyScale.headScale]}>
-        <sphereGeometry args={[0.35, 32, 32]} />
-        <meshStandardMaterial color={bodyColor} roughness={0.5} metalness={0.1} />
+      {/* Head - More defined */}
+      <mesh position={[0, 2.1, 0]} scale={[bodyScale.headScale * 0.95, bodyScale.headScale * 1.15, bodyScale.headScale * 0.98]}>
+        <sphereGeometry args={[0.38, 32, 32]} />
+        <meshStandardMaterial color={bodyColor} roughness={0.4} metalness={0.1} />
       </mesh>
       
-      {/* Hair */}
-      <mesh position={[0, 2.35, -0.05]} scale={[bodyScale.headScale * 1.05, bodyScale.headScale * 0.7, bodyScale.headScale * 1.05]}>
-        <sphereGeometry args={[0.36, 32, 32]} />
+      {/* Hair - Gender specific */}
+      <mesh position={[0, 2.35, gender === "female" ? 0 : -0.05]} scale={[bodyScale.headScale * 1.08, bodyScale.headScale * hairLength, bodyScale.headScale * 1.08]}>
+        <sphereGeometry args={[0.38, 32, 32]} />
         <meshStandardMaterial color={hairColor} roughness={0.9} metalness={0} />
       </mesh>
       
@@ -91,16 +100,16 @@ const BodyMesh = ({ gender, bmi, netCalories }: BodyModel3DProps) => {
         <meshStandardMaterial color={bodyColor} roughness={0.5} metalness={0.1} />
       </mesh>
       
-      {/* Upper Torso - Shirt */}
-      <mesh position={[0, 1.3, 0]} scale={[bodyScale.shoulderWidth, 1, bodyScale.torsoDepth]}>
-        <capsuleGeometry args={[0.35, 0.45, 16, 32]} />
-        <meshStandardMaterial color={clothingTopColor} roughness={0.7} metalness={0} />
+      {/* Upper Torso - Shirt with chest definition */}
+      <mesh position={[0, 1.3, 0]} scale={[bodyScale.shoulderWidth, 1, bodyScale.torsoDepth * bodyScale.chestScale]}>
+        <capsuleGeometry args={[0.38, 0.5, 16, 32]} />
+        <meshStandardMaterial color={clothingTopColor} roughness={0.6} metalness={0.05} />
       </mesh>
       
       {/* Mid Torso - Shirt */}
-      <mesh position={[0, 0.75, 0]} scale={[bodyScale.torsoWidth * 0.88, 1, bodyScale.torsoDepth * 0.88]}>
-        <capsuleGeometry args={[0.32, 0.4, 16, 32]} />
-        <meshStandardMaterial color={clothingTopColor} roughness={0.7} metalness={0} />
+      <mesh position={[0, 0.75, 0]} scale={[bodyScale.torsoWidth * 0.88, 1, bodyScale.torsoDepth * 0.92]}>
+        <capsuleGeometry args={[0.34, 0.42, 16, 32]} />
+        <meshStandardMaterial color={clothingTopColor} roughness={0.6} metalness={0.05} />
       </mesh>
       
       {/* Lower Torso - Shirt */}
@@ -109,8 +118,8 @@ const BodyMesh = ({ gender, bmi, netCalories }: BodyModel3DProps) => {
         <meshStandardMaterial color={clothingTopColor} roughness={0.7} metalness={0} />
       </mesh>
       
-      {/* Hips - Pants */}
-      <mesh position={[0, -0.15, 0]} scale={[bodyScale.torsoWidth * 0.8, 1, bodyScale.torsoDepth * 0.8]}>
+      {/* Hips - Pants with gender-specific width */}
+      <mesh position={[0, -0.15, 0]} scale={[bodyScale.hipWidth * 0.82, 1, bodyScale.torsoDepth * 0.8]}>
         <capsuleGeometry args={[0.32, 0.3, 16, 32]} />
         <meshStandardMaterial color={clothingBottomColor} roughness={0.7} metalness={0} />
       </mesh>
@@ -284,7 +293,7 @@ export const BodyModel3D = ({ gender, bmi, netCalories }: BodyModel3DProps) => {
           />
         </mesh>
         
-        <gridHelper args={[10, 10, "hsl(var(--border))", "hsl(var(--border))"]} position={[0, -3.04, 0]} />
+        <gridHelper args={[10, 10, "#000000", "#000000"]} position={[0, -3.04, 0]} />
       </Canvas>
     </div>
   );
