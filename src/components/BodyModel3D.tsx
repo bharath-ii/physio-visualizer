@@ -66,49 +66,123 @@ const BodyMesh = ({ gender, bmi, netCalories }: BodyModel3DProps) => {
 
   return (
     <group ref={groupRef}>
-      {/* Head - More defined */}
-      <mesh position={[0, 2.1, 0]} scale={[bodyScale.headScale * 0.95, bodyScale.headScale * 1.15, bodyScale.headScale * 0.98]}>
-        <sphereGeometry args={[0.38, 32, 32]} />
-        <meshStandardMaterial color={bodyColor} roughness={0.4} metalness={0.1} />
+      {/* Head - Realistic proportions */}
+      <mesh position={[0, 2.15, 0]} scale={[bodyScale.headScale * 0.85, bodyScale.headScale * 1.05, bodyScale.headScale * 0.88]}>
+        <sphereGeometry args={[0.42, 32, 32]} />
+        <meshStandardMaterial color={bodyColor} roughness={0.35} metalness={0.05} />
       </mesh>
       
-      {/* Hair - Gender specific */}
-      <mesh position={[0, 2.35, gender === "female" ? 0 : -0.05]} scale={[bodyScale.headScale * 1.08, bodyScale.headScale * hairLength, bodyScale.headScale * 1.08]}>
-        <sphereGeometry args={[0.38, 32, 32]} />
-        <meshStandardMaterial color={hairColor} roughness={0.9} metalness={0} />
+      {/* Jawline */}
+      <mesh position={[0, 1.92, 0.08]} scale={[bodyScale.headScale * 0.75, bodyScale.headScale * 0.35, bodyScale.headScale * 0.7]}>
+        <sphereGeometry args={[0.25, 32, 32]} />
+        <meshStandardMaterial color={bodyColor} roughness={0.35} metalness={0.05} />
       </mesh>
       
-      {/* Eyes */}
-      <mesh position={[-0.12, 2.15, 0.3]}>
-        <sphereGeometry args={[0.04, 16, 16]} />
-        <meshStandardMaterial color="#1a1a1a" roughness={0.2} metalness={0.8} />
-      </mesh>
-      <mesh position={[0.12, 2.15, 0.3]}>
-        <sphereGeometry args={[0.04, 16, 16]} />
-        <meshStandardMaterial color="#1a1a1a" roughness={0.2} metalness={0.8} />
-      </mesh>
+      {/* Hair - Gender specific styling */}
+      {gender === "male" ? (
+        <mesh position={[0, 2.42, -0.08]} scale={[bodyScale.headScale * 1.0, bodyScale.headScale * 0.65, bodyScale.headScale * 1.05]}>
+          <sphereGeometry args={[0.42, 32, 32]} />
+          <meshStandardMaterial color={hairColor} roughness={0.9} metalness={0} />
+        </mesh>
+      ) : (
+        <>
+          {/* Female hair - fuller and longer */}
+          <mesh position={[0, 2.38, 0]} scale={[bodyScale.headScale * 1.12, bodyScale.headScale * 0.85, bodyScale.headScale * 1.12]}>
+            <sphereGeometry args={[0.43, 32, 32]} />
+            <meshStandardMaterial color={hairColor} roughness={0.8} metalness={0.1} />
+          </mesh>
+          {/* Hair flow down */}
+          <mesh position={[0, 1.75, -0.25]} scale={[0.85, 1.2, 0.6]}>
+            <sphereGeometry args={[0.28, 32, 32]} />
+            <meshStandardMaterial color={hairColor} roughness={0.8} metalness={0.1} />
+          </mesh>
+        </>
+      )}
       
-      {/* Nose */}
-      <mesh position={[0, 2.05, 0.32]} scale={[0.3, 0.5, 0.8]}>
+      {/* Eyes - Better positioned */}
+      <mesh position={[-0.14, 2.2, 0.32]}>
         <sphereGeometry args={[0.05, 16, 16]} />
-        <meshStandardMaterial color={bodyColor} roughness={0.5} metalness={0.1} />
+        <meshStandardMaterial color="#1a1a1a" roughness={0.1} metalness={0.9} />
+      </mesh>
+      <mesh position={[0.14, 2.2, 0.32]}>
+        <sphereGeometry args={[0.05, 16, 16]} />
+        <meshStandardMaterial color="#1a1a1a" roughness={0.1} metalness={0.9} />
       </mesh>
       
-      {/* Neck */}
-      <mesh position={[0, 1.8, 0]} scale={[bodyScale.neckThickness, 1, bodyScale.neckThickness]}>
-        <cylinderGeometry args={[0.13, 0.16, 0.35, 32]} />
-        <meshStandardMaterial color={bodyColor} roughness={0.5} metalness={0.1} />
+      {/* Eye whites */}
+      <mesh position={[-0.14, 2.2, 0.3]}>
+        <sphereGeometry args={[0.07, 16, 16]} />
+        <meshStandardMaterial color="#FFFFFF" roughness={0.3} metalness={0.1} />
+      </mesh>
+      <mesh position={[0.14, 2.2, 0.3]}>
+        <sphereGeometry args={[0.07, 16, 16]} />
+        <meshStandardMaterial color="#FFFFFF" roughness={0.3} metalness={0.1} />
       </mesh>
       
-      {/* Upper Torso - Shirt with chest definition */}
-      <mesh position={[0, 1.3, 0]} scale={[bodyScale.shoulderWidth, 1, bodyScale.torsoDepth * bodyScale.chestScale]}>
-        <capsuleGeometry args={[0.38, 0.5, 16, 32]} />
-        <meshStandardMaterial color={clothingTopColor} roughness={0.6} metalness={0.05} />
+      {/* Nose - More defined */}
+      <mesh position={[0, 2.08, 0.36]} scale={[0.35, 0.55, 0.9]}>
+        <sphereGeometry args={[0.08, 16, 16]} />
+        <meshStandardMaterial color={bodyColor} roughness={0.35} metalness={0.05} />
       </mesh>
       
-      {/* Mid Torso - Shirt */}
-      <mesh position={[0, 0.75, 0]} scale={[bodyScale.torsoWidth * 0.88, 1, bodyScale.torsoDepth * 0.92]}>
-        <capsuleGeometry args={[0.34, 0.42, 16, 32]} />
+      {/* Mouth area */}
+      <mesh position={[0, 1.95, 0.32]} scale={[0.4, 0.2, 0.5]}>
+        <sphereGeometry args={[0.08, 16, 16]} />
+        <meshStandardMaterial color="#D4A088" roughness={0.4} metalness={0.05} />
+      </mesh>
+      
+      {/* Neck - Gender proportioned */}
+      <mesh position={[0, 1.78, 0]} scale={[bodyScale.neckThickness * 0.95, 1, bodyScale.neckThickness * 0.95]}>
+        <cylinderGeometry args={[0.14, 0.17, 0.4, 32]} />
+        <meshStandardMaterial color={bodyColor} roughness={0.4} metalness={0.05} />
+      </mesh>
+      
+      {/* Upper Torso - Dramatic gender differences */}
+      {gender === "male" ? (
+        <>
+          {/* Male - Broad shoulders and chest */}
+          <mesh position={[0, 1.35, 0]} scale={[bodyScale.shoulderWidth * 1.25, 1.05, bodyScale.torsoDepth * 0.95]}>
+            <capsuleGeometry args={[0.42, 0.48, 16, 32]} />
+            <meshStandardMaterial color={clothingTopColor} roughness={0.6} metalness={0.05} />
+          </mesh>
+          
+          {/* Pectoral definition */}
+          <mesh position={[-0.18, 1.38, 0.15]} scale={[0.85, 0.9, 1.1]}>
+            <sphereGeometry args={[0.22, 32, 32]} />
+            <meshStandardMaterial color={clothingTopColor} roughness={0.5} metalness={0.05} />
+          </mesh>
+          <mesh position={[0.18, 1.38, 0.15]} scale={[0.85, 0.9, 1.1]}>
+            <sphereGeometry args={[0.22, 32, 32]} />
+            <meshStandardMaterial color={clothingTopColor} roughness={0.5} metalness={0.05} />
+          </mesh>
+        </>
+      ) : (
+        <>
+          {/* Female - Narrower shoulders, defined chest */}
+          <mesh position={[0, 1.32, 0]} scale={[bodyScale.shoulderWidth * 0.92, 1, bodyScale.torsoDepth * bodyScale.chestScale * 1.08]}>
+            <capsuleGeometry args={[0.36, 0.46, 16, 32]} />
+            <meshStandardMaterial color={clothingTopColor} roughness={0.6} metalness={0.05} />
+          </mesh>
+          
+          {/* Bust definition */}
+          <mesh position={[-0.14, 1.35, 0.22]} scale={[0.95, 0.85, 1.05]}>
+            <sphereGeometry args={[0.19, 32, 32]} />
+            <meshStandardMaterial color={clothingTopColor} roughness={0.5} metalness={0.05} />
+          </mesh>
+          <mesh position={[0.14, 1.35, 0.22]} scale={[0.95, 0.85, 1.05]}>
+            <sphereGeometry args={[0.19, 32, 32]} />
+            <meshStandardMaterial color={clothingTopColor} roughness={0.5} metalness={0.05} />
+          </mesh>
+        </>
+      )}
+      
+      {/* Mid Torso - Gender tapered */}
+      <mesh position={[0, 0.8, 0]} scale={[
+        bodyScale.torsoWidth * (gender === "male" ? 0.92 : 0.85), 
+        1, 
+        bodyScale.torsoDepth * 0.88
+      ]}>
+        <capsuleGeometry args={[0.34, 0.38, 16, 32]} />
         <meshStandardMaterial color={clothingTopColor} roughness={0.6} metalness={0.05} />
       </mesh>
       
@@ -124,16 +198,32 @@ const BodyMesh = ({ gender, bmi, netCalories }: BodyModel3DProps) => {
         <meshStandardMaterial color={clothingBottomColor} roughness={0.7} metalness={0} />
       </mesh>
 
-      {/* Left Shoulder */}
-      <mesh position={[-0.5 * bodyScale.shoulderWidth, 1.28, 0]} scale={[bodyScale.limbWidth * 0.7, 0.7, bodyScale.limbWidth * 0.7]}>
-        <sphereGeometry args={[0.2, 32, 32]} />
-        <meshStandardMaterial color={clothingTopColor} roughness={0.7} metalness={0} />
+      {/* Left Shoulder - More defined */}
+      <mesh position={[
+        -0.52 * bodyScale.shoulderWidth * (gender === "male" ? 1.15 : 1), 
+        1.32, 
+        0
+      ]} scale={[
+        bodyScale.limbWidth * (gender === "male" ? 0.85 : 0.65), 
+        0.75, 
+        bodyScale.limbWidth * (gender === "male" ? 0.85 : 0.65)
+      ]}>
+        <sphereGeometry args={[0.24, 32, 32]} />
+        <meshStandardMaterial color={clothingTopColor} roughness={0.6} metalness={0.05} />
       </mesh>
       
-      {/* Right Shoulder */}
-      <mesh position={[0.5 * bodyScale.shoulderWidth, 1.28, 0]} scale={[bodyScale.limbWidth * 0.7, 0.7, bodyScale.limbWidth * 0.7]}>
-        <sphereGeometry args={[0.2, 32, 32]} />
-        <meshStandardMaterial color={clothingTopColor} roughness={0.7} metalness={0} />
+      {/* Right Shoulder - More defined */}
+      <mesh position={[
+        0.52 * bodyScale.shoulderWidth * (gender === "male" ? 1.15 : 1), 
+        1.32, 
+        0
+      ]} scale={[
+        bodyScale.limbWidth * (gender === "male" ? 0.85 : 0.65), 
+        0.75, 
+        bodyScale.limbWidth * (gender === "male" ? 0.85 : 0.65)
+      ]}>
+        <sphereGeometry args={[0.24, 32, 32]} />
+        <meshStandardMaterial color={clothingTopColor} roughness={0.6} metalness={0.05} />
       </mesh>
 
       {/* Left Upper Arm - Skin */}
