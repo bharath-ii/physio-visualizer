@@ -14,7 +14,93 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      daily_progress: {
+        Row: {
+          bmi: number
+          breakfast: Json | null
+          calories_burned: number
+          calories_consumed: number
+          created_at: string | null
+          date: string
+          dinner: Json | null
+          evening_workout: string | null
+          gender: string
+          goal_height: number
+          goal_weight: number
+          height: number
+          id: string
+          lunch: Json | null
+          morning_workout: string | null
+          net_calories: number
+          night_workout: string | null
+          user_id: string
+          weight: number
+        }
+        Insert: {
+          bmi: number
+          breakfast?: Json | null
+          calories_burned: number
+          calories_consumed: number
+          created_at?: string | null
+          date?: string
+          dinner?: Json | null
+          evening_workout?: string | null
+          gender: string
+          goal_height: number
+          goal_weight: number
+          height: number
+          id?: string
+          lunch?: Json | null
+          morning_workout?: string | null
+          net_calories: number
+          night_workout?: string | null
+          user_id: string
+          weight: number
+        }
+        Update: {
+          bmi?: number
+          breakfast?: Json | null
+          calories_burned?: number
+          calories_consumed?: number
+          created_at?: string | null
+          date?: string
+          dinner?: Json | null
+          evening_workout?: string | null
+          gender?: string
+          goal_height?: number
+          goal_weight?: number
+          height?: number
+          id?: string
+          lunch?: Json | null
+          morning_workout?: string | null
+          net_calories?: number
+          night_workout?: string | null
+          user_id?: string
+          weight?: number
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
